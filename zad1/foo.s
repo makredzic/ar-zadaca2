@@ -24,12 +24,12 @@ else2:
 
   addiu $sp, $sp, -32
   sw $ra, 16($sp)
-  sh $a0, 18($sp)
+  sh $a0, 20($sp)
 
   jal foo # foo(a-1, b-3)
 
   lw $ra, 16($sp)
-  lh $a0, 18($sp)
+  lh $a0, 20($sp)
   addiu $sp, $sp, 32
 
   addu $v0, $a0, $v0 # a + foo(a-1, b-3)
@@ -41,14 +41,14 @@ else:
 
   addiu $sp, $sp, -32
   sw $ra, 16($sp)
-  sh $a0, 18($sp)
-  sh $a1, 20($sp)
+  sh $a0, 20($sp)
+  sh $a1, 22($sp)
 
   jal foo #foo(a-2, b-1)
 
   lw $ra, 16($sp)
-  lh $a0, 18($sp)
-  lh $a1, 20($sp)
+  lh $a0, 20($sp)
+  lh $a1, 22($sp)
   addiu $sp, $sp, 32
 
   subu $a0, $a0, $a1
