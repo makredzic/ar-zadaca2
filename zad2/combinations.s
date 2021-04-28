@@ -14,7 +14,7 @@ sw $a1, 24($sp)
 sw $a2, 28($sp)
 
 
-addu $a0, $0, $a2 # a0 = r # OVDJE JE PROBLEM, MOZIVAM MALLOC A NISAM SACUVAO ARGUMENTE
+addu $a0, $0, $a2 
 jal malloc
 
 la $t0, d
@@ -39,12 +39,8 @@ jr $ra
 combinations_impl:
     addiu $sp, $sp, -64
     sw $ra, 16($sp)
-    sw $a0, 20($sp) # a0 = *chars
-    sw $a1, 24($sp) # a1 = maxr
-    sw $a2, 28($sp) # a2 = size
-    sw $a3, 32($sp) # a3 = r
     sw $s0, 36($sp) # s0 je prezervirani registar a odlucio sam ga koristit dole, zato je stored na stack
-
+    sw $s1, 40($sp)
 
     bne $a3, $0, else 
     addu $a0, $0, $a1 # a0 = maxr
@@ -54,6 +50,7 @@ combinations_impl:
 else:
 
     addiu $s0, $0, 0 # s0 = i = 0
+    addu $s1, $0, $a2
     j uslov
 tijelo:
 
@@ -69,22 +66,21 @@ tijelo:
     sb $t1, ($t0)
 
     addiu $a3, $a3, -1
-    jal combinations_impl
 
+    jal combinations_impl
+    addiu $s0, $s0, 1
 uslov:
-    slt $t0, $s0, $a2
+    slt $t0, $s0, $s1
     bne $t0, $0, tijelo
 
     j return #bespotrebno jer svakako je sljedeca instrukcija u returnu
 
 
 return:
-    addiu $sp, $sp, 64
     lw $ra, 16($sp)
-    lw $a0, 20($sp)
-    lw $a1, 24($sp)
-    lw $a2, 28($sp)
-    lw $a3, 32($sp)
+    lw $s0, 36($sp) # s0 je prezervirani registar a odlucio sam ga koristit dole, zato je stored na stack
+    lw $s1, 40($sp)
+    addiu $sp, $sp, 64
 jr $ra
 
 
@@ -93,29 +89,28 @@ print_comb:
     addiu $sp, $sp, -32
     sw $ra, 16($sp)
     sw $s0, 20($sp) # s0 = i \\ u ovoj funkcij opet koristim prezervirani registar pa ga zato i pohranjujem ovdje
+    sw $s1, 24($sp)
 
-    sw $a0, 24($sp) #neprezervirani, print_comb je caller jer poziva printf, a0 mi treba nakon printf
-
-
-    addiu $s0, $0, 0
+    addu $s1, $0, $a0
+    addiu $s0, $0, 0 # s0 = i = 0
     j uslov1
 tijelo1:
     la $a0, tekst # pointer na na niz 2 charactera %c
     la $a1, d #adresa od d, d cuva adresu takodjer a ne vrijednost neku
     lw $a1, ($a1) # ucitamo adresu koju d cuva
 
-    addu $a1, $a1, $s0 # d[i]
+    addu $a1, $a1, $s0 # &d[i]
+    lb $a1, ($a1) #a1 = d[i]
 
     jal printf
-
+    addiu $s0, $s0, 1
 uslov1:
-    lw $a0, 24($sp) #a0 nam treba nakon poziva funkcije printf, ne znamo jel printf mijenja a0 jer je a0 neprezervirani reg
-    slt $t0, $s0, $a0
+    slt $t0, $s0, $s1
     bne $t0, $0, tijelo1
  
 end:
-    addiu $sp, $sp, 32
     lw $ra, 16($sp)
     lw $s0, 20($sp)
-    lw $a0, 24($sp)
+    lw $s1, 24($sp)
+    addiu $sp, $sp, 32
 jr $ra
