@@ -3,7 +3,7 @@ tekst: .asciiz "Inverse sqrt of %f is: %f\n"
 
 .section .text
 .globl main
-main: # NOT DONE, NOT WORKING
+main:
     addiu $sp, $sp, -32
     sw $ra, 28($sp)
     sw $s0, 24($sp)
