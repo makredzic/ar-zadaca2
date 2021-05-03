@@ -1,7 +1,7 @@
 .section .text
 roundToTick:
 
-    l.d $f4, ($a0)
+    l.d $f4, ($a0) # $f4 = *p
 
     mtc1 $a1, $f6 # $f6 = precision
     cvt.d.w $f6, $f6 # $f6 = (double)precision
@@ -58,11 +58,10 @@ jr $ra
 
 .globl calculateAmount
 calculateAmount: # calculateAmount(($f12,$f13), $a2)
-    addiu $sp, $sp, -32
+    addiu $sp, $sp, -64
     sw $ra, 16($sp)
     sw $a2, 20($sp)
-    swc1 $f12, 24($sp)
-    swc1 $f13, 28($sp)
+    s.d $f12, 24($sp)
 
     jal getTick # samo pozovemo jer je vec u f12,f13 argument
 
@@ -77,12 +76,11 @@ calculateAmount: # calculateAmount(($f12,$f13), $a2)
 
     l.d $f6, 24($sp) # $f6 = price
 
-    lw $a2, 20($sp) # $a2 = quantity
-    mtc1 $a2, $f4
+    lwc1 $f4, 20($sp) # $f4 = quantity
     cvt.d.w $f4, $f4 # $f4 = (double)quantity
 
     mul.d $f0, $f4, $f6 # (double)quantity * price
 
 lw $ra, 16($sp)
-addiu $sp, $sp, 32
+addiu $sp, $sp, 64
 jr $ra
