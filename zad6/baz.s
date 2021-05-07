@@ -35,7 +35,7 @@ baz:
     else1:
 
     l.d $f4, ($a1)
-    mtc1 $v0, $f6
+    mtc1 $0, $f6
     cvt.d.w $f6, $f6 # $f6 = 0.
 
     c.eq.d $f4, $f6 # if (*p1 == 0)
